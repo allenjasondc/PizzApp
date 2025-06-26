@@ -1,7 +1,7 @@
 import Colors from '@/constants/Colors';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import { Product } from '@/types/types';
-import { Link } from 'expo-router';
+import { Link, useSegments } from 'expo-router';
 
 
 export const defaultPizzaImage = "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/food/default.png"
@@ -13,8 +13,15 @@ type ProductListItemProp = {
 
 
 const ProductListItem = ({productD}: ProductListItemProp) => {
+     //* This is a hook that returns the current route segments as an array of strings.
+    const segments = useSegments()
+
+    //* Strange behavior, but it works
+    const productRoute = `/${segments[0]}/menu/${productD.id}` as `${string}:${string}`
+
+
   return (
-    <Link href={`/menu/${productD.id}`} asChild>
+     <Link href={productRoute} asChild>
       <Pressable style={styles.container}>
         <Image style={styles.image} source={{uri: productD.image || defaultPizzaImage}}/>
         <Text style={styles.name}>{productD.name}</Text>
