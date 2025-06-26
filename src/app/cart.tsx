@@ -2,11 +2,12 @@ import { View, Text, StyleSheet, Platform, FlatList } from "react-native"
 import { StatusBar } from "expo-status-bar"
 import { useCart } from "@/providers/CartProvider";
 import CartListItem from "@/components/CartListItem";
+import Button from "@/components/Button";
 
 
 const CartScreen = () => {
 
-    const{items} = useCart()
+    const{items, total} = useCart()
 
 
     return (
@@ -22,6 +23,8 @@ const CartScreen = () => {
                 
             />
 
+            <Text style={styles.totalAmount}>Total: ${total}</Text>
+            <Button text="Check out" />
 
             {/* Use a light status bar on iOS to account for the black space above the modal */}
             <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
@@ -32,8 +35,14 @@ const CartScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor:"white"
-    }
+        backgroundColor:"white",
+        padding: 10
+    },
+    totalAmount: {
+        marginTop: 20,
+        fontSize: 20,
+        fontWeight: 500
+    },
 })
 
 
