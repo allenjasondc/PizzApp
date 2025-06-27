@@ -15,8 +15,8 @@ const index = () => {
   }
 
   if(!session){
-    {console.log("auto direct")}
-    <Redirect href={`/sign-in`} />
+    //{console.log("auto direct")}
+    return <Redirect href={"/sign-in"} />
   }
 
   return (
