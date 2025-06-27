@@ -23,7 +23,7 @@ const OrderListItem = ({orderD}: OrderListItemProp) => {
     
      return (
         <Link href={orderRoute} asChild>
-            <Pressable style={styles.container} onPress={()=>console.log("isPressed")}>
+            <Pressable style={styles.container}>
                 <View>
                     <Text style={styles.title}>Order #{orderD.id}</Text>
                     <Text style={styles.time}>{dayjs(orderD.created_at).fromNow()}</Text>
