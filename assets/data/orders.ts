@@ -1,4 +1,4 @@
-import { Order } from '../../src/types';
+import { Order } from '@/types/types';
 import products from './products';
 import dayjs from 'dayjs';
 
@@ -6,7 +6,7 @@ const now = dayjs();
 
 const orders: Order[] = [
   {
-    id: 23123,
+    id: 3,
     created_at: now.subtract(1, 'hour').toISOString(),
     total: 31.4,
     status: 'Cooking',
@@ -31,7 +31,7 @@ const orders: Order[] = [
     ],
   },
   {
-    id: 32145,
+    id: 2,
     created_at: now.subtract(3, 'days').toISOString(),
     total: 11.4,
     status: 'Delivered',
@@ -48,7 +48,7 @@ const orders: Order[] = [
     ],
   },
   {
-    id: 23445,
+    id: 1,
     created_at: now.subtract(3, 'weeks').toISOString(),
     total: 11.4,
     status: 'Delivered',
