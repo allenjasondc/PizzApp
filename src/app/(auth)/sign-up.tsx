@@ -2,14 +2,15 @@ import Button from "@/components/Button"
 import Colors from "@/constants/Colors"
 import { Link, Redirect, Stack } from "expo-router"
 import { useState } from "react"
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native"
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native"
+import { supabase } from "@/lib/supabase"
 
 
-
-const SignUp = () => { 
+const SignUpScreen = () => { 
     const [email,setEmail] = useState('')
     const [password,setPassword] = useState('')
     const [errorText,setErrorText] = useState('')
+    const [loading,setLoading]=useState(false)
 
     const resetField = () => {
         setEmail('')
@@ -17,30 +18,38 @@ const SignUp = () => {
         setErrorText('')
     }
 
-    const validateRegistration = () => {
+    // const validateRegistration = () => {
         
-        if (!email) {
-            setErrorText('Email is required')
-            return false
-        }
+    //     if (!email) {
+    //         setErrorText('Email is required')
+    //         return false
+    //     }
 
-        if (!password) {
-            setErrorText('Password is required')
-            return false
-        }
+    //     if (!password) {
+    //         setErrorText('Password is required')
+    //         return false
+    //     }
         
-        return true
-    }
+    //     return true
+    // }
 
-    const createAccount = () => {
-        if(!validateRegistration()){
+
+
+    async function signUpWithEmail() {
+        setLoading(true)
+        const {error} = await supabase.auth.signUp({email, password})
+
+        if(error){ 
+            Alert.alert(error.message) 
+            setLoading(false)
             return
         }
 
-        console.log("registration successful")
-        
+        setLoading(false)
         resetField()
     }
+
+
 
 
     return (
@@ -67,7 +76,7 @@ const SignUp = () => {
 
 
             <Text style={styles.errorText}>{errorText}</Text>
-            <Button text="Create account" onPress={createAccount}/>
+            <Button onPress={signUpWithEmail} disabled={loading} text={loading?"Creating an account...":"Create account"} />
             <Link href="/(auth)/sign-in" asChild>
                 <Pressable onPress={resetField}>
                     <Text style={styles.createLabel}>Sign In</Text>
@@ -111,4 +120,4 @@ const styles = StyleSheet.create({
 
 
 
-export default SignUp
+export default SignUpScreen

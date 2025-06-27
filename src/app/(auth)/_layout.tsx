@@ -20,9 +20,7 @@ export default function TabLayout() {
 
   return (
     <Tabs>
-      
-      <Tabs.Screen name="index" options={{href: null}}/>
-      
+            
       <Tabs.Screen
         name="sign-in"
         options={{

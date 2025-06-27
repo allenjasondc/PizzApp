@@ -2,7 +2,8 @@ import Button from "@/components/Button"
 import Colors from "@/constants/Colors"
 import { Link, Redirect, Stack } from "expo-router"
 import { useState } from "react"
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native"
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native"
+import { supabase } from "@/lib/supabase"
 
 
 
@@ -10,6 +11,21 @@ const SignIn = () => {
     const [email,setEmail] = useState('')
     const [password,setPassword] = useState('')
     const [errorText,setErrorText] = useState('')
+    const [loading,setLoading]=useState(false)
+
+    async function signInWithEmail() {
+        setLoading(true)
+        const {error} = await supabase.auth.signInWithPassword({email, password})
+
+        if(error){ 
+            Alert.alert(error.message) 
+            setLoading(false)
+            return
+        }
+
+        setLoading(false)
+        resetField()
+    }
 
     const resetField = () => {
         setEmail('')
@@ -30,16 +46,6 @@ const SignIn = () => {
         }
         
         return true
-    }
-
-    const submitLogin = () => {
-        if(!validateLogin()){
-            return
-        }
-
-        console.log("login successful")
-        
-        resetField()
     }
 
 
@@ -67,11 +73,9 @@ const SignIn = () => {
 
 
             <Text style={styles.errorText}>{errorText}</Text>
-            <Button text="Sign in" onPress={submitLogin}/>
-            <Link href="/(auth)/sign-up" asChild>
-                <Pressable onPress={resetField}>
-                    <Text style={styles.createLabel}>Create an account</Text>
-                </Pressable>
+            <Button onPress={signInWithEmail} disabled={loading} text={loading?"Signing in...":"Sign in"} />
+            <Link style={styles.createLabel} href="/sign-up" >
+                Create an account
             </Link>
             
         </View>
