@@ -1,10 +1,11 @@
 import { Alert, Image, StyleSheet, Text, TextInput, View } from "react-native"
 import { defaultPizzaImage } from "@/components/ProductListItem"
 import Button from "@/components/Button"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Colors from "@/constants/Colors"
 import * as ImagePicker from 'expo-image-picker';
-import { Stack, useLocalSearchParams } from "expo-router"
+import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { useInsertProduct, useProduct, useUpdateProduct } from "@/api/products"
 
 
 const CreateProductScreen = () => {
@@ -13,8 +14,25 @@ const CreateProductScreen = () => {
     const [errors,setErrors] = useState('')
     const [image,setImage] = useState<string | null>(null)
 
-    const {id} = useLocalSearchParams()
-    const isUpdating = !!id
+    const {id: idString} = useLocalSearchParams()
+    const id = parseFloat(typeof idString == "string" ? idString: idString[0])
+
+    const isUpdating = !!idString
+
+
+    const {mutate: insertProduct} = useInsertProduct()
+    const {mutate: updateProduct} = useUpdateProduct()
+    const {data: updatingProduct} = useProduct(id)
+
+    const router = useRouter()
+
+    useEffect(() => {
+        if(updatingProduct) {
+            setName[updateProduct.name]
+            setPrice[updateProduct.price]
+            setImage[updateProduct.image]
+        }
+    }, [updatingProduct])
 
     //console.log(isUpdating)
 
@@ -33,7 +51,12 @@ const CreateProductScreen = () => {
         console.log("create product")
         
         //Save in the database
-        resetField()
+        insertProduct({name,image,price:parseFloat(price)},{
+            onSuccess: () => {
+                resetField()
+                router.back()
+            }
+        })
     }
 
     const onUpdateCreate = () => {
@@ -45,7 +68,13 @@ const CreateProductScreen = () => {
         console.log("updating product")
         
         //Save in the database
-        resetField()
+        updateProduct({id, name,image,price:parseFloat(price)},{
+            onSuccess: () => {
+                resetField()
+                router.back()
+            }
+        })
+
     }
 
     const onDelete = () => {

@@ -9,19 +9,22 @@ const index = () => {
 
   const {session, loading, isAdmin} = useAuth()
 
-  //console.log(session)
+  // console.log(loading)
+  // console.log(isAdmin)
+
+  
   if(loading){
     return <ActivityIndicator />
   }
 
   if(!session){
-    //{console.log("auto direct")}
     return <Redirect href={"/sign-in"} />
   }
 
   if(!isAdmin){
     return <Redirect href={"/(user)"} />
   }
+
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', padding: 10 }}>
