@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import Colors from "@/constants/Colors"
 import * as ImagePicker from 'expo-image-picker';
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
-import { useInsertProduct, useProduct, useUpdateProduct } from "@/api/products"
+import { useDeleteProduct, useInsertProduct, useProduct, useUpdateProduct } from "@/api/products"
 
 
 const CreateProductScreen = () => {
@@ -15,7 +15,9 @@ const CreateProductScreen = () => {
     const [image,setImage] = useState<string | null>(null)
 
     const {id: idString} = useLocalSearchParams()
-    const id = parseFloat(typeof idString == "string" ? idString: idString[0])
+    const id = parseFloat(
+        typeof idString == "string" ? idString: idString?.[0]
+    )
 
     const isUpdating = !!idString
 
@@ -23,14 +25,15 @@ const CreateProductScreen = () => {
     const {mutate: insertProduct} = useInsertProduct()
     const {mutate: updateProduct} = useUpdateProduct()
     const {data: updatingProduct} = useProduct(id)
+    const {mutate: deleteProduct} = useDeleteProduct()
 
     const router = useRouter()
 
     useEffect(() => {
         if(updatingProduct) {
-            setName[updateProduct.name]
-            setPrice[updateProduct.price]
-            setImage[updateProduct.image]
+            setName(updatingProduct.name)
+            setPrice(updatingProduct.price.toString())
+            setImage(updatingProduct.image)
         }
     }, [updatingProduct])
 
@@ -59,7 +62,7 @@ const CreateProductScreen = () => {
         })
     }
 
-    const onUpdateCreate = () => {
+    const onUpdate = () => {
 
         if(!validateInput()){
             return
@@ -79,12 +82,18 @@ const CreateProductScreen = () => {
 
     const onDelete = () => {
         console.warn("Na delete")   
+        deleteProduct(id,{
+            onSuccess: () => {
+                resetField()
+                router.replace("/(admin)")
+            }
+        })
     }
 
     const onSubmit = () => {
 
         if(isUpdating){
-            onUpdateCreate()
+            onUpdate()
         } else {
             onCreate()
         }
