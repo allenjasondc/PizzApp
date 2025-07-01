@@ -7,7 +7,7 @@ import Button from "@/components/Button";
 
 const CartScreen = () => {
 
-    const{items, total} = useCart()
+    const{items, total, checkOut} = useCart()
 
 
     return (
@@ -24,7 +24,7 @@ const CartScreen = () => {
             />
 
             <Text style={styles.totalAmount}>Total: ${total}</Text>
-            <Button text="Check out" />
+            <Button text="Check out" onPress={checkOut} />
 
             {/* Use a light status bar on iOS to account for the black space above the modal */}
             <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />

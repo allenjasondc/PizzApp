@@ -1,9 +1,20 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import OrderListItem from "@/components/OrderListItem";
-import orders from "@assets/data/orders";
+import { useAdminOrderList } from "@/api/orders";
 
+export default function OrderScreen() {  
 
-export default function OrderScreen() {
+  const {data: orders, isLoading, error} = useAdminOrderList({archived: false})
+  
+  if(isLoading){
+    return <ActivityIndicator />
+  }
+
+  if(error){
+    return <Text>Failed to fetch products</Text>
+  }
+
+  
   return (
     <View style={styles.container}>
       <FlatList 
