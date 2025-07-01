@@ -6,7 +6,10 @@ import Colors from "@/constants/Colors"
 import * as ImagePicker from 'expo-image-picker';
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { useDeleteProduct, useInsertProduct, useProduct, useUpdateProduct } from "@/api/products"
-
+import { randomUUID } from "expo-crypto"
+import { supabase } from "@/lib/supabase"
+import * as FileSystem from 'expo-file-system'
+import {decode} from 'base64-arraybuffer'
 
 const CreateProductScreen = () => {
     const [name,setName] = useState('')
@@ -45,16 +48,20 @@ const CreateProductScreen = () => {
         setErrors('')
     }
 
-    const onCreate = () => {
+    const onCreate = async () => {
 
         if(!validateInput()){
             return
         }
 
+        const imagePath = await uploadImage()
+
         console.log("create product")
         
         //Save in the database
-        insertProduct({name,image,price:parseFloat(price)},{
+        insertProduct(
+        { name, image: imagePath, price:parseFloat(price) },
+        {
             onSuccess: () => {
                 resetField()
                 router.back()
@@ -62,16 +69,18 @@ const CreateProductScreen = () => {
         })
     }
 
-    const onUpdate = () => {
+    const onUpdate = async () => {
 
         if(!validateInput()){
             return
         }
 
+        const imagePath = await uploadImage()
+
         console.log("updating product")
         
         //Save in the database
-        updateProduct({id, name,image,price:parseFloat(price)},{
+        updateProduct({id, name ,image: imagePath ,price:parseFloat(price)},{
             onSuccess: () => {
                 resetField()
                 router.back()
@@ -157,7 +166,28 @@ const CreateProductScreen = () => {
 
 
 
+    const uploadImage = async () => {
+        if (!image?.startsWith('file://')) {
+            return;
+        }
 
+        const base64 = await FileSystem.readAsStringAsync(image, {
+            encoding: 'base64',
+        });
+        const filePath = `${randomUUID()}.png`;
+        const contentType = 'image/png';
+        const { data, error } = await supabase.storage
+            .from('product-images')
+            .upload(filePath, decode(base64), { contentType });
+
+        if (error) {
+            console.log(error)
+        }
+
+        if (data) {
+            return data.path;
+        }
+    };
 
 
     return (
